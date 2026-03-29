@@ -42,7 +42,7 @@ jobs:
       - name: Build sandboxes
         run: pnpm build
         working-directory: ./sandboxes
-      - name: Copy sandbox examples to website
+      - name: Copy sandboxes to website
         run: node sandboxes.js
         working-directory: ./website
       - name: Build website
