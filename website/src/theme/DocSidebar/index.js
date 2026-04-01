@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useRef } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
 import OriginalDocSidebar from '@theme-original/DocSidebar';
@@ -9,16 +10,14 @@ const COOKIE_DURATION = 28; // days (4 weeks)
 function saveUseFallback(value) {
   Cookies.set(COOKIE_NAME, value.toString(), {
     expires: COOKIE_DURATION,
-    sameSite: 'lax'
+    sameSite: 'lax',
   });
 }
 
 function readUseFallback() {
   const cached = Cookies.get(COOKIE_NAME);
 
-  return cached === undefined
-    ? null
-    : cached === 'true';
+  return cached === undefined ? null : cached === 'true';
 }
 
 let scriptPromise = null;
@@ -35,20 +34,20 @@ async function loadEthicalAdsScript() {
 
     scriptPromise = (async () => {
       while (typeof ethicalads === 'undefined') {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       return (await ethicalads.wait) || [];
-    })()
+    })();
   }
 
-  return scriptPromise
+  return scriptPromise;
 }
 
 function createEthicalAdsBlock(root) {
   const banner = document.createElement('div');
 
-  banner.className = 'eab flat horizontal bwndw-loading'
+  banner.className = 'eab flat horizontal bwndw-loading';
   banner.id = 'bwndw';
   banner.setAttribute('data-ea-publisher', 'react-chartjs-2jsorg');
   banner.setAttribute('data-ea-type', 'image');
@@ -69,7 +68,8 @@ function createCarbonAdsBlock(root) {
   banner.className = 'crbn bwndw-loading';
   banner.id = 'bwndw';
 
-  script.src = '//cdn.carbonads.com/carbon.js?serve=CWBDT53N&placement=react-chartjs-2jsorg&format=cover';
+  script.src =
+    '//cdn.carbonads.com/carbon.js?serve=CWBDT53N&placement=react-chartjs-2jsorg&format=cover';
   script.id = '_carbonads_js';
   script.async = true;
 
@@ -92,14 +92,16 @@ export default function DocSidebar(props) {
 
   useEffect(() => {
     if (!document.getElementById('bwndw')) {
-      const root = document.querySelector('.theme-doc-sidebar-menu')?.parentElement;
-      let banner
+      const root = document.querySelector(
+        '.theme-doc-sidebar-menu'
+      )?.parentElement;
+      let banner;
       const showBanner = () => {
         setColorMode(banner, colorModeRef.current);
         bannerRef.current = banner;
         banner.classList.remove('bwndw-loading');
-      }
-      const cachedUseFallback = readUseFallback();
+      };
+      const cachedUseFallback = true; // readUseFallback();
 
       if (cachedUseFallback === true) {
         banner = createCarbonAdsBlock(root);
@@ -107,9 +109,11 @@ export default function DocSidebar(props) {
       } else {
         banner = createEthicalAdsBlock(root);
 
-        loadEthicalAdsScript().then((placements) => {
+        loadEthicalAdsScript().then(placements => {
           if (cachedUseFallback === null) {
-            const useFallback = !placements.length || placements[0].response.campaign_type !== 'paid';
+            const useFallback =
+              !placements.length ||
+              placements[0].response.campaign_type !== 'paid';
 
             if (useFallback) {
               banner.remove();
@@ -120,7 +124,7 @@ export default function DocSidebar(props) {
           }
 
           showBanner();
-        })
+        });
       }
     }
   }, []);
@@ -129,7 +133,5 @@ export default function DocSidebar(props) {
     setColorMode(bannerRef.current, colorMode);
   }, [colorMode]);
 
-  return (
-    <OriginalDocSidebar {...props} />
-  );
+  return <OriginalDocSidebar {...props} />;
 }
